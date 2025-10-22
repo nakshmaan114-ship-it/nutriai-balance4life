@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>NutriAI — Balance4Life</title>
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Nunito:wght@400;700&family=Merriweather:wght@300;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!-- html2canvas + jsPDF for PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- CSS -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo" id="logoBtn" title="Logo (tap 5× for admin)">
+      <span class="material-icons">eco</span>
+    </div>
+    <div style="flex:1">
+      <div class="title" id="screen-title">Home</div>
+      <div class="subtitle" id="screen-sub">Smart protein calculator</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="glass-btn small ripple" id="theme-toggle" title="Switch tone" aria-label="Theme toggle">
+        <span class="material-icons">color_lens</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main container -->
+  <div class="main-container">
+    <!-- Navigation (desktop) -->
+    <nav class="nav-container">
+      <div class="nav-item active" data-target="home">
+        <span class="material-icons">home</span>Home
+      </div>
+      <div class="nav-item" data-target="calculator">
+        <span class="material-icons">calculate</span>Calculator
+      </div>
+      <div class="nav-item" data-target="diet">
+        <span class="material-icons">restaurant</span>Diet Plan
+      </div>
+      <div class="nav-item" data-target="report">
+        <span class="material-icons">assignment</span>Report
+      </div>
+      <div class="nav-item" data-target="downloads">
+        <span class="material-icons">download_for_offline</span>Downloads
+      </div>
+      <div class="nav-item" data-target="certificate">
+        <span class="material-icons">emoji_events</span>Certificate
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- HOME screen -->
+      <div id="home" class="screen active">
+        <div class="card fade-in">
+          <div style="display:flex;gap:16px;align-items:center">
+            <div style="width:80px;height:80px;border-radius:12px;background:linear-gradient(135deg,var(--primary-200),var(--accent));display:flex;align-items:center;justify-content:center">
+              <span class="material-icons" style="color:var(--primary-700);font-size:36px">emoji_food_beverage</span>
+            </div>
+            <div>
+              <div style="font-weight:800;font-size:18px;color:var(--text)">Welcome!</div>
+              <div class="stat-small">Calculate protein or create a diet plan — results go straight into your report.</div>
+            </div>
+          </div>
+          <div style="height:16px"></div>
+          <div class="button-container">
+            <button class="glass-btn ripple" data-nav="calculator">
+              <span class="material-icons">calculate</span> Calculator
+            </button>
+            <button class="glass-btn ripple" data-nav="diet">
+              <span class="material-icons">restaurant</span> Diet Plan
+            </button>
+            <button class="glass-btn ripple" data-nav="downloads">
+              <span class="material-icons">download_for_offline</span> Downloads
+            </button>
+          </div>
+        </div>
+
+        <div class="card fade-in">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-weight:700;font-size:16px">Quick Estimate</div>
+              <div class="stat-small">Type weight to get a quick protein suggestion</div>
+            </div>
+            <div style="width:180px">
+              <input id="quick-weight" type="number" placeholder="kg">
+              <div style="height:8px"></div>
+              <button id="quick-run" class="glass-btn small ripple">Estimate</button>
+              <div style="height:8px"></div>
+              <div id="quick-out" class="stat-small muted">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card fade-in">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-weight:700;font-size:16px">Saved report</div>
+              <div class="stat-small">View latest saved analysis</div>
+            </div>
+            <div style="text-align:right">
+              <div id="saved-summary" class="stat-small muted">No saved report</div>
+              <div style="height:8px"></div>
+              <button class="glass-btn small ripple" data-nav="report">
+                <span class="material-icons">assignment</span> View
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CALCULATOR screen -->
+      <div id="calculator" class="screen">
+        <div class="card fade-in">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-weight:800;font-size:18px">Protein Calculator</div>
+            <div class="stat-small">Mifflin–St Jeor + Activity • Auto-update report</div>
+          </div>
+
+          <div style="height:16px"></div>
+          <div class="row">
+            <div class="col">
+              <label for="name">Name</label>
+              <input id="name" type="text" placeholder="Your name">
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="row">
+            <div class="col">
+              <label for="age">Age</label>
+              <input id="age" type="number" min="8" max="120" placeholder="Years">
+            </div>
+            <div class="col">
+              <label for="gender">Gender</label>
+              <select id="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="row">
+            <div class="col">
+              <label for="height">Height (cm)</label>
+              <input id="height" type="number" placeholder="cm">
+            </div>
+            <div class="col">
+              <label for="weight">Weight (kg)</label>
+              <input id="weight" type="number" placeholder="kg">
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+          <label for="activity">Activity level</label>
+          <select id="activity">
+            <option value="1.2">Sedentary (little/no exercise)</option>
+            <option value="1.375">Light (1-3 days/wk)</option>
+            <option value="1.55" selected>Moderate (3-5 days/wk)</option>
+            <option value="1.725">Very active (6-7 days/wk)</option>
+            <option value="1.9">Extremely active (heavy training)</option>
+          </select>
+
+          <div style="height:16px"></div>
+          <div class="button-container">
+            <button id="calc" class="glass-btn ripple">
+              <span class="material-icons">calculate</span> Calculate
+            </button>
+            <button id="save" class="glass-btn ripple" style="background:linear-gradient(90deg, rgba(67,160,71,0.06), rgba(255,255,255,0.2))">
+              <span class="material-icons">save</span> Save
+            </button>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+              <label style="font-size:14px;color:var(--muted)">γ (g/kg)</label>
+              <select id="gamma">
+                <option value="0.8">0.8 (RDA)</option>
+                <option value="1.0">1.0</option>
+                <option value="1.2">1.2</option>
+                <option value="1.6" selected>1.6 (Strength)</option>
+                <option value="2.0">2.0 (High)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="height:16px"></div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="card" style="flex:1;min-width:150px;text-align:center">
+              <div class="stat-small">BMR</div>
+              <div id="bmr" class="stat">— kcal</div>
+            </div>
+            <div class="card" style="flex:1;min-width:150px;text-align:center">
+              <div class="stat-small">TDEE</div>
+              <div id="tdee" class="stat">— kcal</div>
+            </div>
+            <div class="card" style="flex:1;min-width:150px;text-align:center">
+              <div class="stat-small">Protein/day</div>
+              <div id="protein" class="stat" style="color:var(--primary)">— g</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIET screen -->
+      <div id="diet" class="screen">
+        <div class="card fade-in">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-weight:800;font-size:18px">Diet Plan</div>
+            <div class="stat-small">Generate meals to meet your target</div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="row" style="align-items:end">
+            <div class="col">
+              <label for="diet-type">Diet Type</label>
+              <select id="diet-type">
+                <option value="veg">Vegetarian</option>
+                <option value="nonveg">Non-Vegetarian</option>
+                <option value="vegan">Vegan</option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="target">Target protein (g)</label>
+              <input id="target" type="number" placeholder="Target protein (g)">
+            </div>
+            <div>
+              <button id="gen" class="glass-btn ripple">
+                <span class="material-icons">play_arrow</span> Generate
+              </button>
+            </div>
+          </div>
+
+          <div style="height:16px"></div>
+          <div id="diet-wrap"></div>
+
+          <div style="height:16px"></div>
+          <div class="button-container">
+            <button id="savePlan" class="glass-btn ripple">
+              <span class="material-icons">save</span> Save Plan
+            </button>
+            <button id="regen" class="glass-btn ripple">
+              <span class="material-icons">shuffle</span> Regenerate
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT screen -->
+      <div id="report" class="screen">
+        <div class="card fade-in">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-weight:800;font-size:18px">Report</div>
+            <div class="stat-small">Review saved analysis</div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div id="report-area" class="card">
+            <div class="stat-small">No saved report yet.</div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="button-container">
+            <button id="downloadReport" class="glass-btn ripple">
+              <span class="material-icons">download</span> Download PDF
+            </button>
+            <button id="downloadCert" class="glass-btn ripple">
+              <span class="material-icons">emoji_events</span> Cert PDF
+            </button>
+            <button id="clear" class="glass-btn ripple">
+              <span class="material-icons">delete</span> Clear
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CERTIFICATE screen (view) -->
+      <div id="certificate" class="screen">
+        <div class="card fade-in">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-weight:800;font-size:18px">Certificate</div>
+            <div class="stat-small">Download & print</div>
+          </div>
+
+          <div style="height:16px"></div>
+          <div class="certificate" id="certArea">
+            <div class="cert-title" id="certName">NutriAI Certified</div>
+            <div class="cert-sub" id="certDesc">Completed personalized protein & diet analysis</div>
+            <div style="height:12px"></div>
+            <div class="small muted" id="certFooter">Made with ♥ by Balance 4 Life</div>
+          </div>
+
+          <div style="height:16px"></div>
+          <div class="button-container">
+            <button id="downloadCertBtn" class="glass-btn ripple">
+              <span class="material-icons">download</span> Download
+            </button>
+            <button id="printCert" class="glass-btn ripple">
+              <span class="material-icons">print</span> Print
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOWNLOADS screen -->
+      <div id="downloads" class="screen">
+        <div class="card fade-in">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-weight:800;font-size:18px">Downloads</div>
+            <div class="stat-small">Your exported reports & certificates</div>
+          </div>
+
+          <div style="height:16px"></div>
+          <div id="downloadsList" class="download-list">
+            <div class="stat-small muted">No downloads yet. Export a report or certificate to see items here.</div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- content end -->
+  </div> <!-- main container -->
+
+  <!-- Footer -->
+  <footer class="app-footer" aria-hidden="false">
+    <span class="footer-font-1">Made with</span>
+    <span style="color:var(--primary)"> ♥ </span>
+    <span class="footer-font-2">by</span>
+    <span class="footer-font-3"> Balance 4 Life Team</span>
+  </footer>
+
+  <!-- Bottom Navigation (mobile) -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-container">
+      <div class="bottom-nav-item active" data-target="home">
+        <span class="material-icons">home</span>
+        <span>Home</span>
+      </div>
+      <div class="bottom-nav-item" data-target="calculator">
+        <span class="material-icons">calculate</span>
+        <span>Calc</span>
+      </div>
+      <div class="bottom-nav-item" data-target="diet">
+        <span class="material-icons">restaurant</span>
+        <span>Diet</span>
+      </div>
+      <div class="bottom-nav-item" data-target="report">
+        <span class="material-icons">assignment</span>
+        <span>Report</span>
+      </div>
+      <div class="bottom-nav-item" data-target="downloads">
+        <span class="material-icons">download_for_offline</span>
+        <span>Files</span>
+      </div>
+      <div class="bottom-nav-item" data-target="certificate">
+        <span class="material-icons">emoji_events</span>
+        <span>Cert</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Floating action button -->
+  <div class="fab ripple" id="fab" title="Send feedback">
+    <span class="material-icons">feedback</span>
+  </div>
+
+  <!-- Splash / Mascot (animated) -->
+  <div id="splash" class="splash" aria-hidden="false">
+    <div class="mascot bounce" id="mascot" title="Tap 5 times for admin">
+      <!-- new mascot SVG -->
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#43A047" />
+            <stop offset="100%" stop-color="#A5D6A7" />
+          </linearGradient>
+        </defs>
+        <g transform="translate(10,10)">
+          <!-- Leaf shape -->
+          <path d="M90 30 C120 20, 150 40, 150 80 C150 120, 120 140, 90 160 C60 140, 30 120, 30 80 C30 40, 60 20, 90 30 Z" fill="url(#g1)" />
+          <!-- Inner details -->
+          <path d="M90 50 L90 140" stroke="#2E7D32" stroke-width="4" />
+          <path d="M60 70 Q90 90, 120 70" stroke="#2E7D32" stroke-width="3" fill="none" />
+          <path d="M60 110 Q90 90, 120 110" stroke="#2E7D32" stroke-width="3" fill="none" />
+          <!-- Center dot -->
+          <circle cx="90" cy="90" r="8" fill="#1B5E20" />
+        </g>
+      </svg>
+    </div>
+    <h2>NutriAI</h2>
+    <p>Personalized protein & diet planning</p>
+  </div>
+
+  <!-- Feedback modal markup (hidden by default) -->
+  <div id="feedbackModal" class="modal-backdrop" style="display:none" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Send feedback">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:800">Send Feedback</div>
+        <button id="closeFeedback" class="glass-btn small">Close</button>
+      </div>
+      <div style="height:12px"></div>
+      <label for="fbName">Name (optional)</label>
+      <input id="fbName" type="text" placeholder="Your name">
+      <div style="height:12px"></div>
+      <label>Rating</label>
+      <select id="fbRating">
+        <option value="5">★★★★★ 5</option>
+        <option value="4">★★★★ 4</option>
+        <option value="3">★★★ 3</option>
+        <option value="2">★★ 2</option>
+        <option value="1">★ 1</option>
+      </select>
+      <div style="height:12px"></div>
+      <label for="fbText">Message</label>
+      <textarea id="fbText" rows="4" placeholder="Tell us what you liked or want improved..."></textarea>
+      <div style="height:16px"></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="sendFeedbackBtn" class="glass-btn">Send Feedback</button>
+        <div id="fbStatus" style="color:var(--muted);font-size:14px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview modal for downloads -->
+  <div id="previewModal" class="modal-backdrop" style="display:none" aria-hidden="true">
+    <div class="preview-modal" role="dialog" aria-modal="true" aria-label="Preview file">
+      <div class="preview-header">
+        <div style="font-weight:800" id="previewTitle">File Preview</div>
+        <div style="display:flex;gap:8px">
+          <button id="closePreview" class="glass-btn small">Close</button>
+        </div>
+      </div>
+      <div class="preview-content" id="previewContent">
+        <!-- Preview content will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden admin modal for feedback viewing (only opens after secret taps) -->
+  <div id="adminModal" class="modal-backdrop" style="display:none" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Admin — Feedbacks">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:800">Admin Feedback Viewer</div>
+        <button id="closeAdmin" class="glass-btn small">Close</button>
+      </div>
+      <div style="height:12px"></div>
+      <div id="adminList" style="max-height:320px;overflow:auto"></div>
+      <div style="height:12px"></div>
+      <div style="display:flex;gap:8px">
+        <button id="exportFeedbacks" class="glass-btn small">Export JSON</button>
+        <button id="clearFeedbacks" class="glass-btn small" style="background:linear-gradient(90deg, rgba(200,80,80,0.06), rgba(255,255,255,0.02))">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
